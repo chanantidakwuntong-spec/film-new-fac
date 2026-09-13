@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#7c3aed">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="FilmColorLab">
+  <title>ระบบวิเคราะห์การเปลี่ยนแปลงสีของฟิล์มกะหล่ำปลีม่วง</title>
+
+  <!-- PWA Manifest & App Icons -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="assets/icons/icon.png">
+  <link rel="apple-touch-icon" href="assets/icons/icon.png">
+
+  <!-- Google Fonts & Stylesheet -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+
+  <!-- Chart.js Library -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- Top Navigation & Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand-area">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-title">Cabbage Film Color Lab</h1>
+          <p class="brand-subtitle">ระบบวิเคราะห์สีฟิล์มกะหล่ำปลีม่วงตามเกณฑ์การทดลอง</p>
+        </div>
+      </div>
+
+      <!-- Desktop Nav Tabs -->
+      <nav class="nav-tabs">
+        <button class="nav-item active" data-tab="scan">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h3l2-2h6l2 2h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm8 3a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"/></svg>
+          สแกนฟิล์ม
+        </button>
+        <button class="nav-item" data-tab="history">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+          ประวัติ & กราฟ
+        </button>
+        <button class="nav-item" data-tab="theory">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg>
+          หลักการโครงงาน
+        </button>
+        <button class="nav-item" data-tab="settings">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+          ตั้งค่าเกณฑ์
+        </button>
+      </nav>
+
+      <!-- Status & PWA Install -->
+      <div class="status-area">
+        <button id="pwaInstallBtn" class="pwa-install-btn" title="ติดตั้งลงบนโทรศัพท์มือถือ">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+          ติดตั้งแอป
+        </button>
+        <div id="connectionStatusBadge" class="connection-badge">
+          <span class="status-dot"></span>
+          <span id="connectionStatusText">กำลังตรวจสอบ...</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Wrapper -->
+  <main class="main-wrapper">
+
+    <!-- Notice of Compliance Banner -->
+    <div class="compliance-banner">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+      </svg>
+      <div>
+        <strong>หมายเหตุทางวิชาการ:</strong> เว็บไซต์นี้<strong>ไม่ได้วัดค่าความเข้มข้น PM2.5 โดยตรง</strong> และไม่มีการแสดงผลเป็นหน่วย µg/m³ การแสดงผลเป็นการประเมิน <strong>“ระดับการเปลี่ยนแปลงสีของฟิล์ม”</strong> หรือ <strong>“ระดับผลตามเกณฑ์การทดลอง”</strong> ในห้องปฏิบัติการ
+      </div>
+    </div>
+
+    <!-- TAB 1: กล้องและการสแกนฟิล์ม (Scan & Analyze) -->
+    <section id="tab-scan" class="tab-pane active">
+      <div class="scanner-grid">
+        
+        <!-- Left: Camera Viewfinder & Controls -->
+        <div class="camera-card">
+          <div class="card-header-title">
+            <h2 class="card-title">
+              <svg viewBox="0 0 24 24"><path d="M12 12m-3.2 0a3.2 3.2 0 1 0 6.4 0a3.2 3.2 0 1 0 -6.4 0M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg>
+              กล้องสแกนฟิล์ม
+            </h2>
+            <span style="font-size: 0.78rem; color: var(--text-dim);">กรอบเล็งเป้ากึ่งกลาง</span>
+          </div>
+
+          <!-- Viewfinder Frame -->
+          <div class="viewfinder-container" id="viewfinderContainer">
+            <!-- Video Stream -->
+            <video id="cameraVideo" playsinline autoplay muted></video>
+            
+            <!-- Snapshot Preview Freeze Canvas -->
+            <canvas id="previewCanvas"></canvas>
+
+            <!-- Placeholder Before Camera Starts -->
+            <div class="camera-placeholder" id="cameraPlaceholder">
+              <svg viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+              <p style="font-size: 0.95rem; font-weight: 500; color: #cbd5e1;">กดปุ่ม "เปิดกล้อง" หรือเลือกรูปภาพ</p>
+              <p style="font-size: 0.78rem; color: var(--text-dim);">จัดวางแผ่นฟิล์มกะหล่ำปลีม่วงให้อยู่ในกรอบเล็งเป้า</p>
+            </div>
+
+            <!-- Alignment Reticle (กรอบเล็งเป้าก่อนสแกน) -->
+            <div class="reticle-overlay" id="reticleOverlay">
+              <div class="reticle-box">
+                <div class="reticle-corner-tl"></div>
+                <div class="reticle-corner-tr"></div>
+                <div class="reticle-corner-bl"></div>
+                <div class="reticle-corner-br"></div>
+                
+                <!-- Center Target Pip -->
+                <div class="reticle-center-pip"></div>
+                <div class="reticle-label">กรอบตรวจวัดสีฟิล์ม (ROI)</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hidden Analysis Canvas -->
+          <canvas id="analysisCanvas" style="display: none;"></canvas>
+
+          <!-- Camera Toolbar Controls -->
+          <div class="camera-controls">
+            <button id="startCameraBtn" class="btn btn-primary" style="flex: 1;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+              เปิดกล้องถ่ายภาพ
+            </button>
+            <button id="captureBtn" class="btn btn-success" style="display: none; flex: 1.5;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="8"/></svg>
+              ถ่ายภาพ & วิเคราะห์
+            </button>
+            <button id="switchCameraBtn" class="btn btn-secondary btn-icon-only" title="สลับกล้องหน้า/หลัง" style="display: none;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4h-3.17L15 2H9L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-5 11.5V13H9v2.5L5.5 12 9 8.5V11h6V8.5l3.5 3.5-3.5 3.5z"/></svg>
+            </button>
+            <button id="torchBtn" class="btn btn-secondary btn-icon-only" title="เปิด/ปิดไฟฉาย" style="display: none;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
+            </button>
+            <button id="stopCameraBtn" class="btn btn-secondary btn-icon-only" title="ปิดกล้อง" style="display: none;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+            </button>
+            <div class="file-upload-wrapper" style="flex: 1;">
+              <button class="btn btn-secondary" style="width: 100%;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/></svg>
+                อัปโหลดภาพ
+              </button>
+              <input type="file" id="imageFileInput" accept="image/*">
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Analysis Results & Color Preview -->
+        <div class="result-card">
+          <div class="card-header-title">
+            <h2 class="card-title">
+              <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm6 12H6v-1.4c0-2 4-3.1 6-3.1s6 1.1 6 3.1V18z"/></svg>
+              ผลการวิเคราะห์สีฟิล์ม
+            </h2>
+            <span id="deltaEDisplay" style="font-size: 0.78rem; color: var(--primary-light); font-family: monospace; font-weight: 700;">ΔE: -</span>
+          </div>
+
+          <!-- Color Preview Swatch (7. แสดงสีที่ตรวจได้เป็น Color Preview) -->
+          <div class="color-preview-box" id="colorPreviewBox" style="background-color: #7b2cbf;">
+            <div class="color-preview-text" id="colorHexDisplay">#7B2CBF</div>
+            <div class="color-preview-label">คลิกเพื่อคัดลอกรหัสสี</div>
+          </div>
+
+          <!-- 5 & 6. แสดงค่าสี RGB ที่ตรวจได้ -->
+          <div class="rgb-meters-grid">
+            <div class="rgb-meter-card">
+              <div class="rgb-channel-label red">Red (R)</div>
+              <div class="rgb-value-display" id="rValueDisplay" style="color: #f87171;">-</div>
+              <div class="rgb-bar-bg">
+                <div class="rgb-bar-fill red" id="rBarFill"></div>
+              </div>
+            </div>
+            <div class="rgb-meter-card">
+              <div class="rgb-channel-label green">Green (G)</div>
+              <div class="rgb-value-display" id="gValueDisplay" style="color: #4ade80;">-</div>
+              <div class="rgb-bar-bg">
+                <div class="rgb-bar-fill green" id="gBarFill"></div>
+              </div>
+            </div>
+            <div class="rgb-meter-card">
+              <div class="rgb-channel-label blue">Blue (B)</div>
+              <div class="rgb-value-display" id="bValueDisplay" style="color: #60a5fa;">-</div>
+              <div class="rgb-bar-bg">
+                <div class="rgb-bar-fill blue" id="bBarFill"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 9. แสดงระดับผลการวิเคราะห์เป็น 3 ระดับ -->
+          <div class="level-badge-container">
+            <div class="level-badge level-low" id="analysisLevelBadge">
+              <span class="level-dot"></span>
+              <span id="levelBadgeText">รอการสแกนตัวอย่างฟิล์ม</span>
+            </div>
+          </div>
+
+          <!-- 10. คำอธิบายผลการวิเคราะห์แบบเข้าใจง่าย -->
+          <div class="explanation-card">
+            <div class="explanation-title">
+              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+              คำอธิบายผลตามเกณฑ์การทดลอง
+            </div>
+            <div class="explanation-content" id="analysisExplanationText">
+              กรุณาจัดวางฟิล์มกะหล่ำปลีม่วงให้อยู่กึ่งกลางกรอบเล็งเป้าแล้วกดปุ่ม "ถ่ายภาพ & วิเคราะห์" เพื่ออ่านค่าสีและประเมินระดับการเปลี่ยนแปลง
+            </div>
+          </div>
+
+          <!-- 11. บันทึกผลการวิเคราะห์แต่ละครั้ง -->
+          <div class="save-form-area">
+            <div class="form-group">
+              <label class="form-label" for="sampleNameInput">ชื่อหรือรหัสจุดตรวจตัวอย่าง</label>
+              <input type="text" id="sampleNameInput" class="form-input" placeholder="เช่น จุด A หน้าอาคาร, วันที่ 1 ตอนเช้า">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="sampleNotesInput">บันทึกเพิ่มเติม (ถ้ามี)</label>
+              <input type="text" id="sampleNotesInput" class="form-input" placeholder="เช่น สภาพอากาศครึ้ม, แดดจัด, ความชื้นสูง">
+            </div>
+            <button id="saveRecordBtn" class="btn btn-primary" disabled style="width: 100%; margin-top: 4px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>
+              บันทึกผลการวิเคราะห์นี้
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- TAB 2: ประวัติและกราฟแนวโน้ม (History & Chart) -->
+    <section id="tab-history" class="tab-pane">
+      <div class="history-header">
+        <div>
+          <h2 style="font-size: 1.3rem; font-weight: 700;">ประวัติผลการวิเคราะห์ & แนวโน้มค่าสี</h2>
+          <p style="font-size: 0.82rem; color: var(--text-muted);" id="historyTotalCount">0 รายการ</p>
+        </div>
+        <div class="history-actions">
+          <button id="exportCsvBtn" class="btn btn-secondary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+            ส่งออก CSV (Excel)
+          </button>
+        </div>
+      </div>
+
+      <!-- 13. กราฟการเปลี่ยนแปลงของค่า RGB -->
+      <div class="chart-card">
+        <div class="card-header-title">
+          <h3 class="card-title">
+            <svg viewBox="0 0 24 24"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/></svg>
+            กราฟแนวโน้มการเปลี่ยนแปลงค่าสี (R, G, B)
+          </h3>
+          <span style="font-size: 0.75rem; color: var(--text-dim);">ลำดับตัวอย่างล่าสุด</span>
+        </div>
+        <div class="chart-container">
+          <canvas id="rgbTrendChart"></canvas>
+        </div>
+      </div>
+
+      <!-- 12. ตารางประวัติผลการวิเคราะห์ -->
+      <div class="history-table-wrapper">
+        <table class="history-table" id="historyTable">
+          <thead>
+            <tr>
+              <th style="width: 40px;">#</th>
+              <th>ตัวอย่าง / วันเวลา</th>
+              <th>สีที่ตรวจได้</th>
+              <th>ค่า RGB</th>
+              <th>ระดับผลตามเกณฑ์</th>
+              <th style="width: 50px;">จัดการ</th>
+            </tr>
+          </thead>
+          <tbody id="historyTableBody">
+            <!-- ข้อมูลประวัติจะถูกเรนเดอร์ผ่าน JavaScript -->
+          </tbody>
+        </table>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="historyEmptyState">
+          <svg viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+          </svg>
+          <p style="font-size: 0.95rem; font-weight: 600; color: #cbd5e1;">ยังไม่มีประวัติการวิเคราะห์ฟิล์ม</p>
+          <p style="font-size: 0.8rem; color: var(--text-dim);">สแกนและบันทึกผลตัวอย่างแรกได้ที่แท็บ "สแกนฟิล์ม"</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: 14. หน้าอธิบายหลักการของโครงงาน (Theory & Principles) -->
+    <section id="tab-theory" class="tab-pane">
+      
+      <div class="theory-card">
+        <h2>
+          <svg viewBox="0 0 24 24"><path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z"/></svg>
+          หลักการและที่มาของโครงงานฟิล์มกะหล่ำปลีม่วง
+        </h2>
+        <p>
+          กะหล่ำปลีม่วง (Red Cabbage: <em>Brassica oleracea</em> var. <em>capitata</em> f. <em>rubra</em>) มีสารพฤกษเคมีกลุ่มรงควัตถุสำคัญคือ <strong>แอนโทไซยานิน (Anthocyanin)</strong> ชนิดไซยานิดิน-กลูโคไซด์ (Cyanidin glucosides) ซึ่งมีคุณสมบัติโดดเด่นในการเปลี่ยนโครงสร้างโมเลกุลตามความเป็นกรด-ด่าง (pH indicator) และภาวะออกซิเดชัน-รีดักชันในสิ่งแวดล้อม
+        </p>
+        <p>
+          เมื่อนำสารสกัดแอนโทไซยานินมาขึ้นรูปเป็น <strong>แผ่นฟิล์มชีวภาพอัจฉริยะ (Smart Colorimetric Film)</strong> ด้วยเมทริกซ์พอลิเมอร์ธรรมชาติ เช่น แป้ง หรือเซลลูโลส ฟิล์มจะทำหน้าที่เป็นเซนเซอร์ตรวจจับสารเคมี ละออง หรือไอระเหยกรดในบรรยากาศ (เช่น ซัลเฟอร์ไดออกไซด์ ไนโตรเจนไดออกไซด์ หรืออนุภาคที่เกาะตัวกับสารประกอบกรด)
+        </p>
+      </div>
+
+      <div class="theory-card">
+        <h2>
+          <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+          กลไกการเปลี่ยนแปลงสีของสารแอนโทไซยานิน
+        </h2>
+        <ul>
+          <li><strong>สภาวะเริ่มต้น (สภาวะปกติ):</strong> ฟิล์มมีสีม่วง/ม่วงน้ำเงิน ซึ่งเป็นโครงสร้างสมดุลของ Quinonoidal base ในสภาวะกึ่งเป็นกลาง</li>
+          <li><strong>เมื่อสัมผัสสภาวะกรด/มลภาวะที่มีความเป็นกรด:</strong> สารแอนโทไซยานินจะเปลี่ยนรูปเป็นไอออนบวก <em>Flavylium cation</em> ทำให้เฉดสีเปลี่ยนเป็นสีชมพู หรือสีแดง</li>
+          <li><strong>เมื่อเกิดการสะสมตัวของละอองอนุภาค:</strong> นอกจากการเปลี่ยนสีทางเคมีแล้ว การเกาะจับของฝุ่นละอองบนผิวฟิล์มจะลดค่าความสว่าง (Luminance) และเปลี่ยนอัตราส่วนการสะท้อนแสงของช่องสี RGB อย่างเป็นสัดส่วน</li>
+        </ul>
+
+        <!-- Important Notice Box -->
+        <div class="important-box">
+          <div class="important-box-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+            ข้อกำหนดและจริยธรรมทางวิชาการ (Academic Compliance)
+          </div>
+          <p style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 0;">
+            ระบบวิเคราะห์นี้ประมวลผลจากการเปลี่ยนแปลงของรหัสสี RGB บนแผ่นฟิล์มเท่านั้น <strong>ไม่ได้เป็นการตรวจวัดค่าความเข้มข้น PM2.5 โดยตรง</strong> และ<strong>ไม่มีการรายงานผลเป็นหน่วยไมโครกรัมต่อลูกบาศก์เมตร (µg/m³)</strong> โดยระบบจะจำแนกระดับผลตามเกณฑ์การทดลองที่ได้ศึกษาและเทียบมาตรฐานไว้ในห้องแล็บ
+          </p>
+        </div>
+
+        <!-- 3 Levels Definition -->
+        <h3 style="font-size: 1.05rem; margin: 18px 0 10px 0; color: #ffffff;">นิยามระดับการเปลี่ยนแปลง 3 ระดับตามเกณฑ์การทดลอง</h3>
+        <div class="level-criteria-grid">
+          <div class="criteria-card low">
+            <h3 style="color: var(--level-low);">ระดับต่ำ (Low)</h3>
+            <p>ค่าสีของฟิล์มใกล้เคียงกับสภาวะเริ่มต้น (Baseline Purple) ไม่พบการเบี่ยงเบนของสี หรือค่าความต่างสี $\Delta E$ อยู่ในเกณฑ์ต่ำมาก</p>
+          </div>
+          <div class="criteria-card medium">
+            <h3 style="color: var(--level-medium);">ระดับปานกลาง (Medium)</h3>
+            <p>ฟิล์มเริ่มมีการเปลี่ยนเฉดสีอย่างสังเกตได้ (เบี่ยงเบนไปทางโทนชมพู หรือสีคล้ำลง) บ่งชี้ว่าเกิดปฏิกิริยาเคมีและการสะสมตัวในระดับปานกลาง</p>
+          </div>
+          <div class="criteria-card high">
+            <h3 style="color: var(--level-high);">ระดับสูง (High)</h3>
+            <p>ฟิล์มมีการเปลี่ยนแปลงของสีอย่างมีนัยสำคัญ สีเบี่ยงเบนออกจากสภาวะเดิมอย่างชัดเจนตามเกณฑ์ที่กำหนดไว้ในการทดลอง</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="theory-card">
+        <h2>
+          <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+          คำแนะนำสำหรับการถ่ายภาพและควบคุมคุณภาพ (Quality Control)
+        </h2>
+        <ul>
+          <li><strong>การควบคุมแสง:</strong> ควรถ่ายภาพในบริเวณที่มีแสงสว่างสม่ำเสมอ หลีกเลี่ยงแสงสะท้อนจ้า (Glare) หรือเงาตกกระทบลงบนแผ่นฟิล์ม</li>
+          <li><strong>พื้นหลังมาตรฐาน:</strong> ควรวางแผ่นฟิล์มบนแผ่นกระดาษสีขาวมาตรฐาน (White Reference Background) เพื่อลดการรบกวนของสีพื้น</li>
+          <li><strong>การวางตำแหน่ง:</strong> จัดให้แผ่นฟิล์มอยู่กึ่งกลางกรอบเล็งเป้า (Reticle Guide) เพื่อให้ระบบดึงค่าสีจากบริเวณเนื้อฟิล์มที่สม่ำเสมอที่สุด</li>
+        </ul>
+      </div>
+
+    </section>
+
+    <!-- TAB 4: ตั้งค่าเกณฑ์การทดลอง (Calibration Settings) -->
+    <section id="tab-settings" class="tab-pane">
+      <div class="theory-card">
+        <h2>
+          <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+          ตั้งค่าเกณฑ์การทดลอง (Calibration Baseline & Thresholds)
+        </h2>
+        <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 20px;">
+          สามารถปรับเปลี่ยนค่าสีฟิล์มตั้งต้นและเกณฑ์การตัดแบ่งระดับ เพื่อให้ตรงกับผลการทดลองในห้องปฏิบัติการของท่านได้อย่างแม่นยำ
+        </p>
+
+        <h3 style="font-size: 0.95rem; color: var(--primary-light); margin-bottom: 12px;">ค่าสีฟิล์มตั้งต้น (Baseline Purple Film)</h3>
+        <div class="settings-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 20px;">
+          <div class="form-group">
+            <label class="form-label" for="cfgBaseR" style="color: #f87171;">Baseline Red (0-255)</label>
+            <input type="number" id="cfgBaseR" class="form-input" min="0" max="255" value="128">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="cfgBaseG" style="color: #4ade80;">Baseline Green (0-255)</label>
+            <input type="number" id="cfgBaseG" class="form-input" min="0" max="255" value="75">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="cfgBaseB" style="color: #60a5fa;">Baseline Blue (0-255)</label>
+            <input type="number" id="cfgBaseB" class="form-input" min="0" max="255" value="145">
+          </div>
+        </div>
+
+        <h3 style="font-size: 0.95rem; color: var(--primary-light); margin-bottom: 12px;">เกณฑ์การตัดแบ่งระดับการเปลี่ยนแปลง (Color Delta Thresholds)</h3>
+        <div class="settings-grid" style="margin-bottom: 24px;">
+          <div class="form-group">
+            <label class="form-label" for="cfgThreshLow">เกณฑ์ตัดระดับต่ำ (Delta E &lt; ค่านี้)</label>
+            <input type="number" id="cfgThreshLow" class="form-input" step="1" value="35">
+            <span style="font-size: 0.72rem; color: var(--text-dim);">ค่าความต่างสีน้อยกว่านี้ถือเป็น "ระดับต่ำ"</span>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="cfgThreshMed">เกณฑ์ตัดระดับปานกลาง (Delta E &lt; ค่านี้)</label>
+            <input type="number" id="cfgThreshMed" class="form-input" step="1" value="75">
+            <span style="font-size: 0.72rem; color: var(--text-dim);">หากตั้งแต่ค่านี้ขึ้นไปจะจัดเป็น "ระดับสูง"</span>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+          <button id="saveSettingsBtn" class="btn btn-primary" style="flex: 1;">
+            บันทึกการตั้งค่า
+          </button>
+          <button id="resetSettingsBtn" class="btn btn-secondary">
+            คืนค่าเริ่มต้น
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Mobile Bottom Navigation Bar -->
+  <nav class="mobile-bottom-nav">
+    <button class="mobile-nav-item active" data-tab="scan">
+      <svg viewBox="0 0 24 24"><path d="M4 4h3l2-2h6l2 2h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm8 3a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"/></svg>
+      <span>สแกนฟิล์ม</span>
+    </button>
+    <button class="mobile-nav-item" data-tab="history">
+      <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+      <span>ประวัติ & กราฟ</span>
+    </button>
+    <button class="mobile-nav-item" data-tab="theory">
+      <svg viewBox="0 0 24 24"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg>
+      <span>หลักการ</span>
+    </button>
+    <button class="mobile-nav-item" data-tab="settings">
+      <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+      <span>ตั้งค่า</span>
+    </button>
+  </nav>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Application Logic Scripts -->
+  <script src="assets/js/storage.js"></script>
+  <script src="assets/js/chart-manager.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>

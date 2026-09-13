@@ -1,0 +1,19 @@
+{
+  "name": "ระบบวิเคราะห์การเปลี่ยนแปลงสีของฟิล์มกะหล่ำปลีม่วง",
+  "short_name": "FilmColorLab",
+  "description": "เว็บแอปพลิเคชันตรวจวัดและวิเคราะห์ค่าสี RGB ของฟิล์มกะหล่ำปลีม่วงตามเกณฑ์การทดลอง",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#090d16",
+  "theme_color": "#7c3aed",
+  "icons": [
+    {
+      "src": "assets/icons/icon.png",
+      "sizes": "192x192 512x512 any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
